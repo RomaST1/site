@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Користувачі — Smart Home CRM</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<div class="user-menu">
+    
+</div>
+
+<nav class="nav">
+    
+  <a class="nav__logo" href="index.html">🏠 SmartCRM</a>
+  <div class="nav__links">
+    <a class="nav__link" href="index.html">Дашборд</a>
+    <a class="nav__link" href="devices.html">Пристрої</a>
+    <a class="nav__link nav__link--active" href="users.html">Користувачі</a>
+    <a class="nav__link" href="contacts.html">Контакти</a>
+  </div>
+    <div class="user-menu">
+      <button id="user-menu-btn" class="user-menu__btn">
+          <span id="user-name-display">Завантаження...</span>
+          <span class="user-menu__avatar">👤</span>
+      </button>
+      <div id="user-dropdown" class="user-dropdown hidden">
+          <p class="user-dropdown__role" id="dropdown-role">Роль: ...</p>
+          <hr>
+          <button onclick="logout()" class="btn btn--danger btn--sm" style="width: 100%;">Вийти з системи</button>
+      </div>
+</nav>
+
+
+<main class="page">
+  <div class="page__header">
+    <h1 class="page__title">Користувачі</h1>
+    <p class="page__subtitle">Панель керування профілями та ролями</p>
+  </div>
+
+  <div class="table-card">
+    <div id="users-table"><p class="loading">Завантаження...</p></div>
+  </div>
+</main>
+
+<script type="module">
+  import { query }      from './js/api.js';
+  import { deleteUser } from './js/actions.js';
+  import { renderUserTable } from './js/render.js';
+
+  const container = document.getElementById('users-table');
+
+  async function load() {
+    container.innerHTML = '<p class="loading">Завантаження...</p>';
+    try {
+      const users = await query('profiles', { order: { column: 'created_at', asc: false } });
+      renderUserTable(users, container);
+    } catch (err) {
+      container.innerHTML = `<p class="empty-state error-state">${err.message}</p>`;
+    }
+  }
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action="delete-user"]');
+    if (!btn) return;
+    const deleted = await deleteUser(btn.dataset.id);
+    if (deleted) load();
+  });
+
+  load();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Розумний Будинок - Вхід</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="display: block;"> 
+    <main class="content" style="max-width: 100%; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <div class="login-container">
+            <section class="auth-section">
+                <h2 style="margin-bottom: 10px; color: var(--primary);">Smart Home System</h2>
+                <h3>Вхід у систему керування</h3>
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <input type="text" id="loginInput" class="form-input" placeholder="Логін працівника/мешканця" style="width: 100%;">
+                </div>
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <input type="password" id="passInput" class="form-input" placeholder="Пароль" style="width: 100%;">
+                </div>
+                <button id="loginBtn" class="btn-submit">Увійти</button>
+                <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted);">
+                    Зверніться до адміністратора будинку, якщо забули дані доступу
+                </p>
+            </section>
+        </div>
+    </main>
+    <script type="module">
+        import './js/auth.js'; 
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginBtn = document.getElementById('loginBtn');
+            const loginInput = document.getElementById('loginInput');
+            const passInput = document.getElementById('passInput');
+            const attemptLogin = async () => {
+                const loginVal = loginInput.value.trim();
+                const passVal = passInput.value.trim();
+                if (!loginVal || !passVal) { alert("Будь ласка, введіть логін та пароль"); return; }
+                loginBtn.innerText = "Перевірка..."; loginBtn.disabled = true;
+                if (typeof window.loginUser === 'function') {
+                    await window.loginUser(loginVal, passVal);
+                    loginBtn.innerText = "Увійти"; loginBtn.disabled = false;
+                } else {
+                    alert("Помилка завантаження модулів."); loginBtn.innerText = "Увійти"; loginBtn.disabled = false;
+                }
+            };
+            loginBtn.onclick = attemptLogin;
+            document.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
+        });
+    </script>
+</body>
+</html>

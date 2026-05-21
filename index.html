@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Smart Home CRM</title>
+</head>
+<body>
+    <nav class="nav">
+        <a class="nav__logo" href="index.html">🏠 SmartCRM</a>
+        <div class="nav__links">
+            <a class="nav__link nav__link--active" href="index.html">Дашборд</a>
+            <a class="nav__link" href="devices.html">Пристрої</a>
+            <a class="nav__link" href="users.html">Користувачі</a>
+            <a class="nav__link" href="contacts.html">Контакти</a>
+        </div>
+            <div class="user-menu">
+      <button id="user-menu-btn" class="user-menu__btn">
+          <span id="user-name-display">Завантаження...</span>
+          <span class="user-menu__avatar">👤</span>
+      </button>
+      <div id="user-dropdown" class="user-dropdown hidden">
+          <p class="user-dropdown__role" id="dropdown-role">Роль: ...</p>
+          <hr>
+          <button onclick="logout()" class="btn btn--danger btn--sm" style="width: 100%;">Вийти з системи</button>
+      </div>
+    </nav>
+    <main class="page">
+        <h1 class="page__title">Дашборд</h1>
+        <div id="stats-grid"></div>
+        <div id="device-grid"><p class="loading">Завантаження...</p></div>
+    </main>
+    <script type="module" src="./js/app.js"></script>
+</body>
+</html>

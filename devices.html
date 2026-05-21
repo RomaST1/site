@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Пристрої — Smart Home CRM</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav__logo" href="index.html">🏠 SmartCRM</a>
+  <div class="nav__links">
+    <a class="nav__link" href="index.html">Дашборд</a>
+    <a class="nav__link nav__link--active" href="devices.html">Пристрої</a>
+    <a class="nav__link" href="users.html">Користувачі</a>
+    <a class="nav__link" href="contacts.html">Контакти</a>
+  </div>
+      <div class="user-menu">
+      <button id="user-menu-btn" class="user-menu__btn">
+          <span id="user-name-display">Завантаження...</span>
+          <span class="user-menu__avatar">👤</span>
+      </button>
+      <div id="user-dropdown" class="user-dropdown hidden">
+          <p class="user-dropdown__role" id="dropdown-role">Роль: ...</p>
+          <hr>
+          <button onclick="logout()" class="btn btn--danger btn--sm" style="width: 100%;">Вийти з системи</button>
+      </div>
+</nav>
+
+<main class="page">
+  <div class="page__header">
+    <h1 class="page__title">Пристрої</h1>
+    <p class="page__subtitle">Додавай, видаляй та керуй підключеними пристроями</p>
+  </div>
+
+  <div class="form-card" style="margin-bottom: 32px;">
+    <h2>Новий пристрій</h2>
+    <form id="device-form">
+      <div class="form-group">
+        <label for="name">Назва *</label>
+        <input id="name" name="name" type="text" placeholder="напр. Лампа у вітальні" required />
+      </div>
+      <div class="form-group">
+        <label for="type">Тип *</label>
+        <select id="type" name="type" required>
+          <option value="">— Оберіть тип —</option>
+          <option value="light">Освітлення</option>
+          <option value="thermostat">Термостат</option>
+          <option value="camera">Камера</option>
+          <option value="lock">Замок</option>
+          <option value="sensor">Датчик</option>
+          <option value="socket">Розетка</option>
+          <option value="speaker">Динамік</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="location">Розташування</label>
+        <input id="location" name="location" type="text" placeholder="напр. Кухня" />
+      </div>
+      <button type="submit" class="btn btn--primary">Додати пристрій</button>
+    </form>
+  </div>
+
+  <div id="device-grid"><p class="loading">Завантаження...</p></div>
+</main>
+
+<script type="module">
+  import { query }       from './js/api.js';
+  import { addDevice, deleteDevice } from './js/actions.js';
+  import { renderDeviceGrid }        from './js/render.js';
+
+  const grid = document.getElementById('device-grid');
+  const form = document.getElementById('device-form');
+
+  async function load() {
+    grid.innerHTML = '<p class="loading">Завантаження...</p>';
+    try {
+      const devices = await query('devices', { order: { column: 'updated_at', asc: false } });
+      renderDeviceGrid(devices, grid);
+    } catch (err) {
+      grid.innerHTML = `<p class="empty-state error-state">${err.message}</p>`;
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const result = await addDevice(new FormData(form));
+    if (result) { form.reset(); load(); }
+  });
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action="delete-device"]');
+    if (!btn) return;
+    const deleted = await deleteDevice(btn.dataset.id);
+    if (deleted) load();
+  });
+
+  load();
+</script>
+</body>
+</html>
